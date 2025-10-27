@@ -2,18 +2,21 @@
   "version": 2,
   "builds": [
     {
-      "src": "Weather/wsgi.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "15mb",
-        "runtime": "python3.9"
-      }
+      "src": "weather/wsgi.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
     {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "Weather/wsgi.py"
+      "dest": "weather/wsgi.py"
     }
-  ]
+  ],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "weather.settings"
+  }
 }
