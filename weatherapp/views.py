@@ -38,7 +38,7 @@ def home(request):
         humidity = data['main']['humidity']
         wind = data['wind']['speed']
         day = datetime.date.today()
-        return render(request,'Templates/index.html',{'description':description,'icon':icon,'temp':temp,'day':day,'city':city,'humidity':humidity,'pressure':pressure,'wind':wind,'exception_occured':False,'image_url':image_url})
+        return render(request,'index.html',{'description':description,'icon':icon,'temp':temp,'day':day,'city':city,'humidity':humidity,'pressure':pressure,'wind':wind,'exception_occured':False,'image_url':image_url})
     
     except :
         exception_occured=True
@@ -47,4 +47,5 @@ def home(request):
 
 
         return render(request,'index.html',{'description':'clear sky','icon':'01d','temp':25,'day':day,'city':'Bengaluru','humidity':50,'pressure':1005,'wind':2.5,'exception_occured':True})
+
 
