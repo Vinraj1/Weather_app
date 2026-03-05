@@ -1,63 +1,113 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap"
-      rel="stylesheet"
-    />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Weather App</title>
+
+<link rel="stylesheet" href="{% static 'style.css' %}">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 </head>
 
+
 <body
-    {% if exception_occured %}
-        style = "background-image: url('https://images.pexels.com/photos/3008509/pexels-photo-3008509.jpeg?auto=compress&cs=tinysrgb&w=1600');"
-    {% else %}
-        style = "background-image:url('{{ image_url }}');"
-    {% endif %}>
+{% if exception_occured %}
+style="background-image:url('https://images.pexels.com/photos/3008509/pexels-photo-3008509.jpeg?auto=compress&cs=tinysrgb&w=1600');"
+{% else %}
+style="background-image:url('{{ image_url }}');"
+{% endif %}
+>
+
+<div class="overlay"></div>
+
+<div class="container">
+
+<h1 class="title">🌦 Weather Dashboard</h1>
+
+<form method="POST" id="weatherForm">
+{% csrf_token %}
+
+<div class="search-box">
+
+<input
+type="text"
+name="city"
+placeholder="Search city..."
+required
+/>
+
+<button type="submit" class="search-btn">
+Search
+</button>
+
+</div>
+
+</form>
+
+{% if city %}
+
+<div class="weather-card">
+
+<div class="weather-main">
+
+<div class="temp-section">
+
+<h2 class="temp">{{ temp }}°C</h2>
+
+<h2 class="city">{{ city }}</h2>
+
+<p class="day">{{ day }}</p>
+
+</div>
+
+<div class="icon-section">
+
+<img src="http://openweathermap.org/img/w/{{ icon }}.png">
+
+<p class="desc">{{ description }}</p>
+
+</div>
+
+</div>
+
+<div class="weather-details">
+
+<div class="detail-card">
+<p>Pressure</p>
+<h3>{{ pressure }}</h3>
+</div>
+
+<div class="detail-card">
+<p>Humidity</p>
+<h3>{{ humidity }}</h3>
+</div>
+
+<div class="detail-card">
+<p>Wind</p>
+<h3>{{ wind }}</h3>
+</div>
+
+</div>
+
+</div>
+
+{% endif %}
+
+</div>
 
 
-  <div class="container">
-    <h1 class="heading">Weather App</h1>
-    
-    <form method="POST">
-      {% csrf_token %}
-      <input type="text" name="city" placeholder="Enter City">
-      <button type="submit" class="btn">Search</button>
-    </form>
-    <div class="weather">
-      <div class="left">
-        <h2 class="temp">{{ temp }}&#176; C</h2>
-        <h2 class="city">{{ city }}</h2>
-        <div class="bottom">
-          <h3>Pressure : {{ pressure }}</h3>
-          <h3>Humidity : {{ humidity }}</h3>
-          <h3>Wind : {{ wind }}</h3>
-        </div>
-      </div>
-      <div class="right">
-        <div class="icon">
-          <p><img src="http://openweathermap.org/img/w/{{ icon }}.png" width="120px"></p>
-        </div>
-        <div class="condition">
-          <p>{{ description }}</p>
-          <p>{{ day }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {% if exception_occured %}
-  <script>
-    window.onload = function(){
-        alert('Entered city is incorrect');
-    }
-  </script>
-  {% endif %}
+{% if exception_occured %}
+<script>
+window.onload = function(){
+alert("Entered city is incorrect");
+}
+</script>
+{% endif %}
 
 </body>
 </html>
