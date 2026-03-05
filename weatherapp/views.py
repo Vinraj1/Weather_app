@@ -3,6 +3,7 @@ from django.contrib import messages
 import requests
 import datetime
 
+
 def home(request):
 
     if 'city' in request.POST:
@@ -10,11 +11,11 @@ def home(request):
     else:
         city = 'Bengaluru'
 
-    # OpenWeather API
     url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid=0ee21de2424d17200507af7ed4df5b60'
+    forecast_url = f'https://api.openweathermap.org/data/2.5/forecast?q={city}&appid=0ee21de2424d17200507af7ed4df5b60'
+
     PARAMS = {'units': 'metric'}
 
-    # Google Image API
     API_KEY = 'AIzaSyDPbCnP5DggtUkSQrZbkN6pLhaC1EdvEyI'
     SEARCH_ENGINE_ID = '41ed4c0029ce5407a'
 
@@ -27,7 +28,6 @@ def home(request):
 
     data = requests.get(city_url).json()
     search_items = data.get("items")
-
     image_url = search_items[1]['link']
 
     try:
@@ -36,55 +36,48 @@ def home(request):
 
         description = data['weather'][0]['description']
         icon = data['weather'][0]['icon']
+
         temp = data['main']['temp']
+        feels_like = data['main']['feels_like']
+
         pressure = data['main']['pressure']
         humidity = data['main']['humidity']
+
         wind = data['wind']['speed']
-
-        # NEW FEATURES (safe additions)
-
-        feels_like = data['main']['feels_like']
         wind_direction = data['wind']['deg']
 
-        sunrise = datetime.datetime.fromtimestamp(
-            data['sys']['sunrise']
-        ).strftime('%H:%M')
-
-        sunset = datetime.datetime.fromtimestamp(
-            data['sys']['sunset']
-        ).strftime('%H:%M')
+        sunrise = datetime.datetime.fromtimestamp(data['sys']['sunrise'])
+        sunset = datetime.datetime.fromtimestamp(data['sys']['sunset'])
 
         day = datetime.date.today()
 
-        # 5 day forecast API
-        forecast_url = f'https://api.openweathermap.org/data/2.5/forecast?q={city}&appid=0ee21de2424d17200507af7ed4df5b60&units=metric'
-        forecast_data = requests.get(forecast_url).json()
+        # ---------- 5 DAY FORECAST ----------
+
+        forecast_data = requests.get(forecast_url, PARAMS).json()
 
         forecast_list = []
 
-        for i in forecast_data['list'][0:5]:
-            forecast = {
-                'temp': i['main']['temp'],
-                'icon': i['weather'][0]['icon'],
-                'day': datetime.datetime.fromtimestamp(
-                    i['dt']
-                ).strftime('%A')
-            }
-            forecast_list.append(forecast)
+        for item in forecast_data['list'][::8]:
+            forecast_list.append({
+                "day": datetime.datetime.fromtimestamp(item['dt']).strftime('%A'),
+                "temp": item['main']['temp'],
+                "icon": item['weather'][0]['icon'],
+                "description": item['weather'][0]['description']
+            })
 
         return render(request, 'index.html', {
             'description': description,
             'icon': icon,
             'temp': temp,
+            'feels_like': feels_like,
             'day': day,
             'city': city,
             'humidity': humidity,
             'pressure': pressure,
             'wind': wind,
-            'feels_like': feels_like,
             'wind_direction': wind_direction,
-            'sunrise': sunrise,
-            'sunset': sunset,
+            'sunrise': sunrise.strftime("%H:%M"),
+            'sunset': sunset.strftime("%H:%M"),
             'forecast': forecast_list,
             'exception_occured': False,
             'image_url': image_url
@@ -100,15 +93,15 @@ def home(request):
             'description': 'clear sky',
             'icon': '01d',
             'temp': 25,
+            'feels_like': 25,
             'day': day,
             'city': 'Bengaluru',
             'humidity': 50,
             'pressure': 1005,
             'wind': 2.5,
-            'feels_like': 25,
             'wind_direction': 0,
             'sunrise': '06:00',
-            'sunset': '18:30',
+            'sunset': '18:00',
             'forecast': [],
             'exception_occured': True
         })
