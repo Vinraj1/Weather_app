@@ -103,3 +103,4 @@ rfc3987-syntax==1.1.0
 rpds-py==0.29.0
 Send2Trash==1.8.3
 gunicorn==21.2.0
+whitenoise==6.7.0
